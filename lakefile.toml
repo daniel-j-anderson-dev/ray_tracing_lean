@@ -1,0 +1,10 @@
+name = "ray_tracing"
+version = "0.1.0"
+defaultTargets = ["ray_tracing"]
+
+[[lean_lib]]
+name = "RayTracing"
+
+[[lean_exe]]
+name = "ray_tracing"
+root = "Main"
