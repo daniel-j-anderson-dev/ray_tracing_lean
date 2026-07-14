@@ -1,9 +1,16 @@
 import RayTracing.Resolution
 import RayTracing.Netpbm
 import RayTracing.Basic
+import RayTracing.Ray
+
+open Color
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
+
+def Scalar := Float
+def Vector3 := Vector Scalar 3
+def Ray' := Ray Scalar
 
 namespace RedGreenGradient
 
@@ -18,13 +25,15 @@ def header : Header := {
   maxValue := 255
 }
 
+instance : Coe Float UInt8 where coe := (·.toUInt8)
+instance : Coe UInt8 Float where coe := (·.toFloat)
 def pixelColor (resolution : Resolution) (index : Nat × Nat) : Rgb8 :=
   let (rowIndex, columnIndex) := index
 
   let horizontalRatio := rowIndex.toFloat / resolution.rowCount.toFloat
   let verticalRatio := columnIndex.toFloat / resolution.columnCount.toFloat
 
-  let color : RgbPercent := (horizontalRatio, verticalRatio, 0.0)
+  let color := rgb horizontalRatio verticalRatio 0.0
   let color := color.percentOf header.maxValue.toUInt8
   color
 
