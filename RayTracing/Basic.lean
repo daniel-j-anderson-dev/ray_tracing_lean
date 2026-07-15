@@ -1,3 +1,9 @@
+namespace uint8_max
+
+public def UInt8.max : UInt8 := 255
+
+end uint8_max
+
 namespace sqrt
 
 public class Sqrt α where
