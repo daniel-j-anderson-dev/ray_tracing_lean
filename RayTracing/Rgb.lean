@@ -97,6 +97,12 @@ public instance [HDiv α β γ] : HDiv (Rgb α) (β) (Rgb γ) where
 public instance ToString [ToString α] : ToString (Rgb α) where
   toString self := s!"⟨{self.red}, {self.green}, {self.blue}⟩"
 
+public instance [Zero α] : Zero (Rgb α) where
+  zero := ⟨0, 0, 0⟩
+
+public instance [One α] : One (Rgb α) where
+  one := ⟨1, 1, 1⟩
+
 end Rgb
 
 end rgb

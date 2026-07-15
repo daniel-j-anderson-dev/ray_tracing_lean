@@ -117,6 +117,12 @@ public instance [HDiv α β γ] : HDiv (Vector3 α) (β) (Vector3 γ) where
 public instance ToString [ToString α] : ToString (Vector3 α) where
   toString self := s!"⟨{self.x}, {self.y}, {self.z}⟩"
 
+public instance [Zero α] : Zero (Vector3 α) where
+  zero := ⟨0, 0, 0⟩
+
+public instance [One α] : One (Vector3 α) where
+  one := ⟨1, 1, 1⟩
+
 end Vector3
 
 end vector3
