@@ -62,16 +62,7 @@ public def clamp
   (self : Rgb α) (lower upper: α)
   : Rgb α :=
   self.map (clampScalar · lower upper)
-
-public def percentOf
-  [Max α] [Min α] [Zero α] [Mul α] [Coe α β] [Coe β α]
-  (self : Rgb α) (value : β)
-  : Rgb β :=
-  let clamped := self.clamp 0 value
-  let scaled := clamped.map (· * (value : α))
-  let casted := scaled.map (Coe.coe ·)
-  casted
-
+  
 public def toArray
   (self : Rgb α)
   : Array α :=
