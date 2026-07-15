@@ -5,6 +5,7 @@ import RayTracing.Ray
 
 open rgb
 open resolution
+open uint8_max
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
@@ -24,8 +25,6 @@ def header : netpbm.Header := {
   maxValue := 255
 }
 
-instance : Coe Float UInt8 where coe := (·.toUInt8)
-instance : Coe UInt8 Float where coe := (·.toFloat)
 def pixelColor
   (resolution : Resolution) (index : Nat × Nat)
   : Rgb UInt8 :=
@@ -35,7 +34,8 @@ def pixelColor
   let verticalRatio := columnIndex.toFloat / resolution.columnCount.toFloat
 
   let color : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
-  let color := color / 255
+  let color := color / UInt8.max.toFloat
+  let color := color.map Float.toUInt8
   color
 
 def imageData := netpbm.generateImage header (pixelColor header.resolution)
