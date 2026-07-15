@@ -11,9 +11,6 @@ public structure Vector3 (α : Type u) where
 
 namespace Vector3
 
-public instance ToString [ToString α] : ToString (Vector3 α) where
-  toString self := s!"⟨{self.x}, {self.y}, {self.z}⟩"
-
 public def map
   (f: α → β) (self : Vector3 α)
   : Vector3 β :=
@@ -116,6 +113,9 @@ public instance [HMul α β γ] : HMul (β) (Vector3 α) (Vector3 γ) where
 
 public instance [HDiv α β γ] : HDiv (Vector3 α) (β) (Vector3 γ) where
   hDiv v c := v.scalarDivide c
+
+public instance ToString [ToString α] : ToString (Vector3 α) where
+  toString self := s!"⟨{self.x}, {self.y}, {self.z}⟩"
 
 end Vector3
 
