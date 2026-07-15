@@ -1,7 +1,12 @@
 import RayTracing.Basic
 import RayTracing.Resolution
+import RayTracing.Rgb
 
-open Color
+open rgb
+open resolution
+
+namespace netpbm
+
 
 public inductive Format where
 | P1
@@ -40,7 +45,7 @@ public instance : ToString Header where
 public def Header.toNetpbmBytes (header : Header) : ByteArray :=
   s!"{header}".toByteArray
 
-public def Vector.toNetpbmBytes
+public def Rgb.toNetpbmBytes
   [ToString α] [Max α] [Min α] [Zero α] [Coe α UInt8] [Coe Nat α]
   (color : Rgb α) (header : Header)
   : Array UInt8 :=
@@ -51,6 +56,9 @@ public def Vector.toNetpbmBytes
 
 public instance : Coe Nat UInt8 where coe := (·.toUInt8)
 public instance : Coe α α where coe := id
-public def generateImage (header : Header) (pixelColor : (Nat × Nat) → Rgb8) : ByteArray :=
-  let pixelsNetpbmBytes := header.resolution.pixelIndexes.flatMap ((·.toNetpbmBytes header) ∘ pixelColor)
+public def generateImage
+  (header : Header) (pixelColor : Nat × Nat → Rgb UInt8) : ByteArray :=
+  let pixelsNetpbmBytes := header.resolution.pixelIndexes.flatMap ((Rgb.toNetpbmBytes · header) ∘ pixelColor)
   header.toNetpbmBytes ++ ⟨pixelsNetpbmBytes⟩
+
+end netpbm
