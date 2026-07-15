@@ -9,12 +9,13 @@ namespace netpbm
 
 
 public inductive Format where
-| P1
-| P2
-| P3
-| P4
-| P5
-| P6
+  | P1
+  | P2
+  | P3
+  | P4
+  | P5
+  | P6
+  deriving Repr
 
 public instance : ToString Format where
   toString
@@ -28,6 +29,7 @@ public instance : ToString Format where
 public inductive Encoding where
 | ascii
 | binary
+  deriving Repr
 
 public def Format.encoding : Format → Encoding
   | .P1 | .P2 | .P3 => .ascii
@@ -37,6 +39,7 @@ public structure Header where
   resolution : Resolution
   format : Format
   maxValue : Nat
+  deriving Repr
 
 public instance : ToString Header where
   toString header :=

@@ -14,6 +14,9 @@ public structure Quaternion α where
 
 namespace Quaternion
 
+public instance ToString [ToString α] : ToString (Quaternion α) where
+  toString self := s!"⟨{self.x}, {self.y}, {self.z}, {self.w}⟩"
+
 public def map
   (f: α → β) (self : Quaternion α)
   : Quaternion β :=

@@ -4,12 +4,15 @@ namespace vector3
 
 open sqrt
 
-public structure Vector3 α where
+public structure Vector3 (α : Type u) where
   x : α
   y : α
   z : α
 
 namespace Vector3
+
+public instance ToString [ToString α] : ToString (Vector3 α) where
+  toString self := s!"⟨{self.x}, {self.y}, {self.z}⟩"
 
 public def map
   (f: α → β) (self : Vector3 α)

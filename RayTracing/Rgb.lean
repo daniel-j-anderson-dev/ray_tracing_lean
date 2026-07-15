@@ -11,6 +11,9 @@ public structure Rgb α where
 
 namespace Rgb
 
+public instance ToString [ToString α] : ToString (Rgb α) where
+  toString self := s!"⟨{self.red}, {self.green}, {self.blue}⟩"
+
 public def map
   (f : α → β) (self : Rgb α)
   : Rgb β :=
@@ -62,7 +65,7 @@ public def clamp
   (self : Rgb α) (lower upper: α)
   : Rgb α :=
   self.map (clampScalar · lower upper)
-  
+
 public def toArray
   (self : Rgb α)
   : Array α :=

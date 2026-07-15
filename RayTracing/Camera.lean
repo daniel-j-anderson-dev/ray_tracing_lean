@@ -12,6 +12,9 @@ public structure Camera α where
 
 namespace Camera
 
+public instance ToString [ToString α] : ToString (Camera α) where
+  toString self := s!"\{center := {self.center}, orientation := {self.orientation}}"
+
 public def right
   [Mul α] [Add α] [Sub α] [Zero α] [One α]
   (self : Camera α)
