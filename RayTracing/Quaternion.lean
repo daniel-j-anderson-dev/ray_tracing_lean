@@ -14,9 +14,6 @@ public structure Quaternion α where
 
 namespace Quaternion
 
-public instance ToString [ToString α] : ToString (Quaternion α) where
-  toString self := s!"⟨{self.x}, {self.y}, {self.z}, {self.w}⟩"
-
 public def map
   (f: α → β) (self : Quaternion α)
   : Quaternion β :=
@@ -145,6 +142,9 @@ public instance [HMul α β γ] : HMul (β) (Quaternion α) (Quaternion γ) wher
 
 public instance [HDiv α β γ] : HDiv (Quaternion α) (β) (Quaternion γ) where
   hDiv v c := v.scalarDivide c
+
+public instance ToString [ToString α] : ToString (Quaternion α) where
+  toString self := s!"⟨{self.x}, {self.y}, {self.z}, {self.w}⟩"
 
 end Quaternion
 
