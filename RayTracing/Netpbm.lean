@@ -54,8 +54,8 @@ public def Rgb.toNetpbmBytes
   | .binary => clamped.toArray.map Coe.coe
   | .ascii => s!"{clamped.red} {clamped.green} {clamped.blue}\n".toByteArray.data
 
-public instance : Coe Nat UInt8 where coe := (·.toUInt8)
-public instance : Coe α α where coe := id
+local instance : Coe Nat UInt8 where coe := (·.toUInt8)
+local instance : Coe α α where coe := id
 public def generateImage
   (header : Header) (pixelColor : Nat × Nat → Rgb UInt8) : ByteArray :=
   let pixelsNetpbmBytes := header.resolution.pixelIndexes.flatMap ((Rgb.toNetpbmBytes · header) ∘ pixelColor)
