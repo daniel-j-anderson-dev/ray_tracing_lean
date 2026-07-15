@@ -11,9 +11,6 @@ public structure Rgb α where
 
 namespace Rgb
 
-public instance ToString [ToString α] : ToString (Rgb α) where
-  toString self := s!"⟨{self.red}, {self.green}, {self.blue}⟩"
-
 public def map
   (f : α → β) (self : Rgb α)
   : Rgb β :=
@@ -96,6 +93,9 @@ public instance [HMul α β γ] : HMul (β) (Rgb α) (Rgb γ) where
 
 public instance [HDiv α β γ] : HDiv (Rgb α) (β) (Rgb γ) where
   hDiv v c := v.scalarDivide c
+
+public instance ToString [ToString α] : ToString (Rgb α) where
+  toString self := s!"⟨{self.red}, {self.green}, {self.blue}⟩"
 
 end Rgb
 
