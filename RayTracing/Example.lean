@@ -38,9 +38,9 @@ def pixelColor
   let horizontalRatio := rowIndex.toFloat / resolution.rowCount.toFloat
   let verticalRatio := columnIndex.toFloat / resolution.columnCount.toFloat
 
-  let color : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
-  let color := color / UInt8.max.toFloat
-  let color := color.map Float.toUInt8
+  let percentColor : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
+  let color := percentColor * 255.0
+  let color := color.map (·.toUInt8)
   color
 
 def imageData := netpbm.generateImage header (pixelColor header.resolution)
