@@ -14,7 +14,7 @@ namespace Rgb
 public def map
   (f : α → β) (self : Rgb α)
   : Rgb β :=
-  ⟨f self.red, f self.blue, f self.green⟩
+  ⟨f self.red, f self.green, f self.blue⟩
 
 public def zipWith
   (f : α → β → γ) (self : Rgb α) (other : Rgb β)
