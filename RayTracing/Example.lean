@@ -59,6 +59,7 @@ namespace ray_cast
 def idealAspectRatio := mkRat 16 9
 def imageWidth := 400
 def resolution := Resolution.fromColumnCountIdealAspectRatio imageWidth idealAspectRatio
+def header := { red_green_gradient.header with resolution := resolution }
 
 def camera : Camera := {
   center := ⟨0,0,0⟩
