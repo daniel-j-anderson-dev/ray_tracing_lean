@@ -76,7 +76,7 @@ abbrev rayCast
   let pixelCenter := viewport.pixelCenter index
   {
     origin := pixelCenter
-    direction := camera.center - (viewport.pixelCenter index)
+    direction := camera.center - pixelCenter
   }
 
 def csv :=
