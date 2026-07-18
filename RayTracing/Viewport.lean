@@ -46,6 +46,16 @@ public def mk'
 
   ⟨pixelTopLeft, pixelΔX, pixelΔY⟩
 
+public def pixelCenter
+  [NatToα : Coe Nat α] [Mul α] [Add α]
+  (self : Viewport α) (index : Nat × Nat)
+  : Vector3 α :=
+  let (rowIndex, columnIndex) := index
+  let xOffset := self.Δx * (columnIndex : α)
+  let yOffset := self.Δy * (rowIndex : α)
+  let offset := xOffset + yOffset
+  self.topLeft + offset
+
 end Viewport
 
 end viewport
