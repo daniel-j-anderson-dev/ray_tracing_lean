@@ -102,9 +102,11 @@ def viewport := Viewport.mk' focalLength viewportHeight camera resolution
 def rayCastCsv :=
   let rays := resolution.pixelIndexes.map (rayCast camera viewport)
   let csvColumnNames := "pixelIndex, ray.origin.x, ray.origin.y, ray.origin.z, ray.direction.x, ray.direction.y, ray.direction.z\n"
-  let raysCsv := rays.toList.zipIdx.map λ (ray, i) => s!"{i}, {ray.origin.x}, {ray.origin.y}, {ray.origin.z}, {ray.direction.x}, {ray.direction.y}, {ray.direction.z}\n"
-  let raysCsv := raysCsv.foldl (· ++ ·) ""
-  csvColumnNames ++ raysCsv
+  let csvRows := rays.toList.zipIdx.map
+    λ (ray, i) =>
+      s!"{i}, {ray.origin.x}, {ray.origin.y}, {ray.origin.z}, {ray.direction.x}, {ray.direction.y}, {ray.direction.z}\n"
+  let csvData := csvRows.foldl (· ++ ·) ""
+  csvColumnNames ++ csvData
 
 -- #eval IO.FS.writeFile outputPath rayCastCsv
 
