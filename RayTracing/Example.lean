@@ -63,7 +63,7 @@ def header := { red_green_gradient.header with resolution := resolution }
 
 def camera : Camera := {
   center := ⟨0,0,0⟩
-  orientation := ⟨1, 0, 0, 0⟩
+  orientation := ⟨0, 0, 0, 1⟩
 }
 
 def viewport := Viewport.mk' (focalLength := 1.0) (height := 2.0) camera resolution
