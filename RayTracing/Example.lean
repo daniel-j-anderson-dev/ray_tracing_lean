@@ -10,11 +10,12 @@ open resolution
 open uint8_max
 
 abbrev Scalar := Float
+local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩
 abbrev Vector3 := vector3.Vector3 Scalar
 abbrev Ray := ray.Ray Scalar
 abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
-abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
+abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
@@ -53,19 +54,52 @@ end red_green_gradient
 
 namespace ray_cast
 
-
--- image
-
 def idealAspectRatio := mkRat 16 9
 def imageWidth := 400
 def resolution := Resolution.fromColumnCountIdealAspectRatio imageWidth idealAspectRatio
+
 def header := { red_green_gradient.header with resolution := resolution }
+def outputPath := s!"{outputPathRoot}ray_cast.csv"
 
 def camera : Camera := {
   center := ⟨0,0,0⟩
   orientation := ⟨0, 0, 0, 1⟩
 }
 
-def viewport := Viewport.mk' (focalLength := 1.0) (height := 2.0) camera resolution
+def focalLength := 1.0
+def viewportHeight := 2.0
+def viewport := Viewport.mk' focalLength viewportHeight camera resolution
+
+abbrev rayCast
+  (camera : Camera) (viewport : Viewport) (index : Nat × Nat)
+  : Ray :=
+  let pixelCenter := viewport.pixelCenter index
+  {
+    origin := pixelCenter
+    direction := camera.center - (viewport.pixelCenter index)
+  }
+
+def csv :=
+  let rays := resolution.pixelIndexes.map (rayCast camera viewport)
+  let csvColumnNames := "ray.origin.x, ray.origin.y, ray.origin.z, ray.direction.x, ray.direction.y, ray.direction.z\n"
+  let raysCsv := rays.map λ ray => s!"{ray.origin.x}, {ray.origin.y}, {ray.origin.z}, {ray.direction.x}, {ray.direction.y}, {ray.direction.z}\n"
+  let raysCsv := raysCsv.foldl (· ++ ·) ""
+  csvColumnNames ++ raysCsv
+
+#eval IO.FS.writeFile outputPath csv
+
+-- https://www.desmos.com/3d/bsf4pxj1tz
+#eval idealAspectRatio
+#eval imageWidth
+#eval resolution
+#eval resolution.aspectRatio (α := Float)
+#eval camera.center
+#eval camera.right
+#eval camera.up
+#eval camera.forward
+#eval focalLength
+#eval viewportHeight
+#eval viewport
+#eval rayCast camera viewport (resolution.deserializePixelIndex 1225)
 
 end ray_cast
