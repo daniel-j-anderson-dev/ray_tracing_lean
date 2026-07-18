@@ -4,10 +4,12 @@ import RayTracing.Basic
 import RayTracing.Ray
 import RayTracing.Camera
 import RayTracing.Viewport
+import RayTracing.Sphere
 
 open rgb
 open resolution
 open uint8_max
+open sqrt
 
 abbrev Scalar := Float
 abbrev Byte := UInt8
@@ -19,6 +21,7 @@ abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
 abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
 abbrev rayCast := @ray.rayCast
+abbrev Sphere := sphere.Sphere Scalar
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
@@ -129,3 +132,44 @@ def outputPath := s!"{outputPathRoot}blue_white_gradient{outputPathExtension}"
 #eval IO.FS.writeBinFile outputPath image
 
 end blue_white_gradient
+
+namespace sphere_no_shading
+
+def resolution := ray_cast.resolution
+def viewport := ray_cast.viewport
+def camera := ray_cast.camera
+def header := ray_cast.header
+
+def raySphereIntersection
+  (ray : Ray) (sphere : Sphere)
+  : Option Scalar :=
+  let offsetCenter := sphere.center - ray.origin
+  let a := ray.direction.normSquared
+  let b := -2 * ray.direction.dotProduct offsetCenter
+  let c := offsetCenter.normSquared - (sphere.radius * sphere.radius)
+  let discriminant := b*b - 4*a*c
+  if discriminant < 0 then
+    none
+  else
+    some ((-b - (sqrt discriminant)) / (2 * a))
+
+def pixelColor
+  (sphere : Sphere) (pixelIndex : Nat × Nat)
+  : Rgb Byte :=
+  let ray := rayCast camera viewport pixelIndex
+  match raySphereIntersection ray sphere with
+  | none => blue_white_gradient.pixelColor pixelIndex
+  | some _ => ⟨255, 0, 0⟩
+
+def sphere : Sphere := {
+  center := ⟨0, 0, -1⟩,
+  radius := 0.5
+}
+
+def image := netpbm.generateImage header (pixelColor sphere)
+
+def outputPath := s!"{outputPathRoot}sphere_no_shading{outputPathExtension}"
+
+#eval IO.FS.writeBinFile outputPath image
+
+end sphere_no_shading
