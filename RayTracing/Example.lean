@@ -10,6 +10,8 @@ open resolution
 open uint8_max
 
 abbrev Scalar := Float
+abbrev Byte := UInt8
+abbrev Byte.max : Byte := 255
 local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩
 abbrev Vector3 := vector3.Vector3 Scalar
 abbrev Ray := ray.Ray Scalar
@@ -34,7 +36,7 @@ def header : netpbm.Header := {
 
 def pixelColor
   (resolution : Resolution) (index : Nat × Nat)
-  : Rgb UInt8 :=
+  : Rgb Byte :=
   let (rowIndex, columnIndex) := index
 
   let horizontalRatio := rowIndex.toFloat / resolution.rowCount.toFloat
@@ -91,6 +93,39 @@ def rayCastCsv :=
   let raysCsv := raysCsv.foldl (· ++ ·) ""
   csvColumnNames ++ raysCsv
 
-#eval IO.FS.writeFile outputPath rayCastCsv
+-- #eval IO.FS.writeFile outputPath rayCastCsv
 
 end ray_cast
+
+namespace blue_white_gradient
+
+def resolution := ray_cast.resolution
+def viewport := ray_cast.viewport
+def camera := ray_cast.camera
+def header := ray_cast.header
+
+def rayColor
+  (ray : Ray)
+  : Rgb Scalar :=
+  let unitDirection := ray.direction.normalize.getD 0
+  let a := (unitDirection.y + 1) / 2
+  let startColor : Rgb _ := ⟨1.0, 1.0, 1.0⟩
+  let endColor : Rgb _ := ⟨0.5, 0.7, 1.0⟩
+  let percentColor := (1 - a) * startColor + a * endColor
+  percentColor
+
+def pixelColor
+  (index : Nat × Nat)
+  : Rgb Byte :=
+  let ray := rayCast camera viewport index
+  let percentColor := rayColor ray
+  let color := percentColor.map (Float.toUInt8 ∘ (· * 255))
+  color
+
+def image := netpbm.generateImage header pixelColor
+
+def outputPath := s!"{outputPathRoot}blue_white_gradient{outputPathExtension}"
+
+#eval IO.FS.writeBinFile outputPath image
+
+end blue_white_gradient
