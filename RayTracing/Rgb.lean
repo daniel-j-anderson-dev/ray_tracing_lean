@@ -108,6 +108,9 @@ public instance [Zero α] : Zero (Rgb α) where
 public instance [One α] : One (Rgb α) where
   one := ⟨1, 1, 1⟩
 
+public instance [Coe α β] : Coe (Rgb α) (Rgb β) where
+  coe := Rgb.map (f := Coe.coe)
+
 end Rgb
 
 end rgb

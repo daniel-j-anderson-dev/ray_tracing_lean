@@ -26,6 +26,16 @@ abbrev Sphere := sphere.Sphere Scalar
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
 
+abbrev vector3.Vector3.toRgb
+  (self : vector3.Vector3 α)
+  : Rgb α :=
+  ⟨self.x, self.y, self.z⟩
+
+abbrev Rgb.toVector3
+  (self : Rgb α)
+  : vector3.Vector3 α :=
+  ⟨self.red, self.green, self.blue⟩
+
 namespace red_green_gradient
 
 def header : netpbm.Header := {
@@ -173,3 +183,59 @@ def outputPath := s!"{outputPathRoot}sphere_no_shading{outputPathExtension}"
 #eval IO.FS.writeBinFile outputPath image
 
 end sphere_no_shading
+
+namespace sphere_surface_normals
+
+def resolution := ray_cast.resolution
+def viewport := ray_cast.viewport
+def camera := ray_cast.camera
+def header := ray_cast.header
+
+def raySphereIntersection
+  (ray : Ray) (sphere : Sphere)
+  : Option Scalar :=
+  let offsetCenter := sphere.center - ray.origin
+  let a := ray.direction.normSquared
+  let h := ray.direction.dotProduct offsetCenter
+  let c := offsetCenter.normSquared - (sphere.radius * sphere.radius)
+  let discriminant := (h * h) - (a * c)
+  if discriminant < 0 then
+    none
+  else
+    some ((h - sqrt discriminant) / a)
+
+def rayColor
+  (ray : Ray) (sphere : Sphere)
+  : Rgb Scalar :=
+  Option.getD (
+    do
+    let t ← raySphereIntersection ray sphere
+    let _ ← if t == 0 then none else some ()
+    let hitPoint := ray.pointAt t
+    let normal := (hitPoint - sphere.center).normalize.getD 0
+    let normalColor := (normal.toRgb + 1) / 2.0
+    some normalColor
+  )
+ (blue_white_gradient.rayColor ray)
+
+
+def pixelColor
+  (sphere : Sphere) (pixelIndex : Nat × Nat)
+  : Rgb Byte :=
+  let ray := rayCast camera viewport pixelIndex
+  let color := rayColor ray sphere
+  let color := color.map (Float.toUInt8 ∘ (· * 255))
+  color
+
+def sphere : Sphere := {
+  center := ⟨0, 0, -1⟩,
+  radius := 0.5
+}
+
+def image := netpbm.generateImage header (pixelColor sphere)
+
+def outputPath := s!"{outputPathRoot}sphere_surface_normals{outputPathExtension}"
+
+#eval IO.FS.writeBinFile outputPath image
+
+end sphere_surface_normals
