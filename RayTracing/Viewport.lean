@@ -33,16 +33,16 @@ public def mk'
   let width := height * resolution.aspectRatio
 
   let x := camera.right * width
-  let y := camera.up * -height
-  let z := camera.forward * focalLength
+  let y := camera.up * height
+  let z := camera.forward * -focalLength
 
-  let center := camera.center + z
-  let topLeft := center - ((x + y) / two)
+  let offset := z - ((x + y) / two)
+  let viewportTopLeft := camera.center + offset
 
   let pixelΔX := x / (resolution.columnCount : α)
   let pixelΔY := y / (resolution.rowCount : α)
   let offset := (pixelΔX + pixelΔY) / two
-  let pixelTopLeft := topLeft + offset
+  let pixelTopLeft := viewportTopLeft + offset
 
   ⟨pixelTopLeft, pixelΔX, pixelΔY⟩
 
