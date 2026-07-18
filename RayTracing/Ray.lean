@@ -1,13 +1,27 @@
 import RayTracing.Vector3
+import RayTracing.Viewport
+import RayTracing.Camera
 
 namespace ray
 
 open vector3
+open camera
+open viewport
+open ray
 
 public structure Ray α where
   origin : Vector3 α
   direction : Vector3 α
 
+public def rayCast
+  [Coe Nat α] [Mul α] [Add α] [Sub α]
+  (camera : Camera α) (viewport : Viewport α) (index : Nat × Nat)
+  : Ray α :=
+  let pixelCenter := viewport.pixelCenter index
+  {
+    origin := pixelCenter
+    direction := camera.center - pixelCenter
+  }
 
 namespace Ray
 

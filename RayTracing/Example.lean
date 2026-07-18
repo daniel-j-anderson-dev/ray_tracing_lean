@@ -16,6 +16,7 @@ abbrev Ray := ray.Ray Scalar
 abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
 abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
+abbrev rayCast := @ray.rayCast
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
@@ -40,8 +41,7 @@ def pixelColor
   let verticalRatio := columnIndex.toFloat / resolution.columnCount.toFloat
 
   let percentColor : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
-  let color := percentColor * 255.0
-  let color := color.map (·.toUInt8)
+  let color := percentColor.map ((·.toUInt8) ∘ (· * 255.0))
   color
 
 def imageData := netpbm.generateImage header (pixelColor header.resolution)
@@ -70,29 +70,11 @@ def focalLength := 1.0
 def viewportHeight := 2.0
 def viewport := Viewport.mk' focalLength viewportHeight camera resolution
 
-abbrev rayCast
-  (camera : Camera) (viewport : Viewport) (index : Nat × Nat)
-  : Ray :=
-  let pixelCenter := viewport.pixelCenter index
-  {
-    origin := pixelCenter
-    direction := camera.center - pixelCenter
-  }
-
-def csv :=
-  let rays := resolution.pixelIndexes.map (rayCast camera viewport)
-  let csvColumnNames := "ray.origin.x, ray.origin.y, ray.origin.z, ray.direction.x, ray.direction.y, ray.direction.z\n"
-  let raysCsv := rays.map λ ray => s!"{ray.origin.x}, {ray.origin.y}, {ray.origin.z}, {ray.direction.x}, {ray.direction.y}, {ray.direction.z}\n"
-  let raysCsv := raysCsv.foldl (· ++ ·) ""
-  csvColumnNames ++ raysCsv
-
-#eval IO.FS.writeFile outputPath csv
-
 -- https://www.desmos.com/3d/bsf4pxj1tz
 #eval idealAspectRatio
 #eval imageWidth
 #eval resolution
-#eval resolution.aspectRatio (α := Float)
+#eval resolution.aspectRatio (α := Scalar)
 #eval camera.center
 #eval camera.right
 #eval camera.up
@@ -101,5 +83,14 @@ def csv :=
 #eval viewportHeight
 #eval viewport
 #eval rayCast camera viewport (resolution.deserializePixelIndex 1225)
+
+def rayCastCsv :=
+  let rays := resolution.pixelIndexes.map (rayCast camera viewport)
+  let csvColumnNames := "ray.origin.x, ray.origin.y, ray.origin.z, ray.direction.x, ray.direction.y, ray.direction.z\n"
+  let raysCsv := rays.map λ ray => s!"{ray.origin.x}, {ray.origin.y}, {ray.origin.z}, {ray.direction.x}, {ray.direction.y}, {ray.direction.z}\n"
+  let raysCsv := raysCsv.foldl (· ++ ·) ""
+  csvColumnNames ++ raysCsv
+
+#eval IO.FS.writeFile outputPath rayCastCsv
 
 end ray_cast
