@@ -50,7 +50,7 @@ public def Header.toNetpbmBytes (header : Header) : ByteArray :=
 
 public def Rgb.toNetpbmBytes
   [ToString α] [Max α] [Min α] [Zero α] [Coe α UInt8] [Coe Nat α]
-  (color : Rgb α) (header : Header)
+  (header : Header) (color : Rgb α)
   : Array UInt8 :=
   let clamped := (color.clamp 0 header.maxValue)
   match header.format.encoding with
@@ -60,8 +60,12 @@ public def Rgb.toNetpbmBytes
 local instance : Coe Nat UInt8 where coe := (·.toUInt8)
 local instance : Coe α α where coe := id
 public def generateImage
-  (header : Header) (pixelColor : Nat × Nat → Rgb UInt8) : ByteArray :=
-  let pixelsNetpbmBytes := header.resolution.pixelIndexes.flatMap ((Rgb.toNetpbmBytes · header) ∘ pixelColor)
-  header.toNetpbmBytes ++ ⟨pixelsNetpbmBytes⟩
+  (header : Header) (pixelColor : Nat × Nat → Rgb UInt8)
+  : ByteArray :=
+  let pixelIndexes := header.resolution.pixelIndexes
+  let pixelColors := pixelIndexes.map pixelColor
+  let pixelsNetpbmBytes := pixelColors.flatMap (Rgb.toNetpbmBytes header)
+  let image := header.toNetpbmBytes ++ ⟨pixelsNetpbmBytes⟩
+  image
 
 end netpbm
