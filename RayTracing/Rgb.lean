@@ -68,6 +68,11 @@ public def toArray
   : Array α :=
   #[self.red, self.green, self.blue]
 
+public def toByteArray
+  (self : Rgb UInt8)
+  : ByteArray :=
+  ⟨self.toArray⟩
+
 public def toVector
   (self : Rgb α)
   : Vector α 3 :=
