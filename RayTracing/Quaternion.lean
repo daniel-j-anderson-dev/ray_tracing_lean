@@ -144,7 +144,7 @@ public instance [HDiv α β γ] : HDiv (Quaternion α) (β) (Quaternion γ) wher
   hDiv v c := v.scalarDivide c
 
 public instance ToString [ToString α] : ToString (Quaternion α) where
-  toString self := s!"⟨{self.x}, {self.y}, {self.z}, {self.w}⟩"
+  toString self := s!"{self.x}, {self.y}, {self.z}, {self.w}"
 
 public instance [Zero α] : Zero (Quaternion α) where
   zero := ⟨0, 0, 0, 0⟩

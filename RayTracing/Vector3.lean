@@ -115,7 +115,7 @@ public instance [HDiv α β γ] : HDiv (Vector3 α) (β) (Vector3 γ) where
   hDiv v c := v.scalarDivide c
 
 public instance ToString [ToString α] : ToString (Vector3 α) where
-  toString self := s!"⟨{self.x}, {self.y}, {self.z}⟩"
+  toString self := s!"{self.x}, {self.y}, {self.z}"
 
 public instance [Zero α] : Zero (Vector3 α) where
   zero := ⟨0, 0, 0⟩

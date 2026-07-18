@@ -100,7 +100,7 @@ public instance [HDiv α β γ] : HDiv (Rgb α) (β) (Rgb γ) where
   hDiv v c := v.scalarDivide c
 
 public instance ToString [ToString α] : ToString (Rgb α) where
-  toString self := s!"⟨{self.red}, {self.green}, {self.blue}⟩"
+  toString self := s!"{self.red}, {self.green}, {self.blue}"
 
 public instance [Zero α] : Zero (Rgb α) where
   zero := ⟨0, 0, 0⟩
