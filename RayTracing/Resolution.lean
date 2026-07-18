@@ -46,6 +46,14 @@ public def pixelIndexes (self : Resolution) : Array (Nat × Nat) :=
     (Array.range self.columnCount).map λ columnIndex =>
       (rowIndex, columnIndex)
 
+public def forEachPixel
+  [Monad m]
+  (self : Resolution) (f : Nat × Nat → m Unit)
+  : m Unit :=
+  for rowIndex in [0:self.rowCount] do
+    for columnIndex in [0:self.columnCount] do
+      f (rowIndex, columnIndex)
+
 end Resolution
 
 end resolution
