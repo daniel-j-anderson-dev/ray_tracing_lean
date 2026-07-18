@@ -22,8 +22,8 @@ public def fromColumnCountIdealAspectRatio
   let rowCount := if rowCount < 1 then 1 else rowCount
   ⟨rowCount, columnCount⟩
 
-public def aspectRatio [Coe Nat β] [Div β] (self : Resolution) : β :=
-  (self.columnCount : β) / (self.rowCount : β)
+public def aspectRatio [NatToα : Coe Nat α] [Div α] (self : Resolution) : α :=
+  (self.columnCount : α) / (self.rowCount : α)
 
 public def pixelCount (self : Resolution) : Nat :=
   self.rowCount * self.columnCount
@@ -34,11 +34,18 @@ public def pixelRowIndex (self : Resolution) (pixelIndex : Nat) : Nat :=
 public def pixelColumnIndex (self : Resolution) (pixelIndex : Nat) : Nat :=
   pixelIndex % self.columnCount
 
+public def deserializePixelIndex (self : Resolution) (serialPixelIndex: Nat) : Nat × Nat :=
+  (self.pixelRowIndex serialPixelIndex, self.pixelColumnIndex serialPixelIndex)
+
+public def serializeIndex (self : Resolution) (deserializedIndex : Nat × Nat) : Nat :=
+  let (rowIndex, columnIndex) := deserializedIndex
+  rowIndex * self.columnCount + columnIndex
+
 public def pixelIndexes (self : Resolution) : Array (Nat × Nat) :=
   (Array.range self.rowCount).flatMap λ rowIndex =>
     (Array.range self.columnCount).map λ columnIndex =>
-
       (rowIndex, columnIndex)
+
 end Resolution
 
 end resolution
