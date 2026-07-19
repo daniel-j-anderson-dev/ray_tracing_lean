@@ -25,16 +25,6 @@ abbrev rayCast := ray.rayCast (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
 
-abbrev vector3.Vector3.toRgb
-  (self : vector3.Vector3 α)
-  : Rgb α :=
-  ⟨self.x, self.y, self.z⟩
-
-abbrev Rgb.toVector3
-  (self : Rgb α)
-  : vector3.Vector3 α :=
-  ⟨self.red, self.green, self.blue⟩
-
 namespace red_green_gradient
 
 def header : netpbm.Header := {

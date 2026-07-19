@@ -93,6 +93,18 @@ public def crossProduct
     lhs.x * rhs.y - lhs.y * rhs.x,
   ⟩
 
+open clamp renaming clamp → clampScalar in
+public abbrev clamp
+  [Max α] [Min α]
+  (self : Vector3 α) (lower upper: α)
+  : Vector3 α :=
+  self.map (clampScalar · lower upper)
+
+public def toArray
+  (self : Vector3 α)
+  : Array α :=
+  #[self.x, self.y, self.z]
+
 public instance [HAdd α β γ] : HAdd (Vector3 α) (Vector3 β) (Vector3 γ) where
   hAdd := componentWiseAdd
 
