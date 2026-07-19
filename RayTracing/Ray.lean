@@ -14,13 +14,14 @@ public structure Ray α where
   direction : Vector3 α
 
 public def rayCast
-  [Coe Nat α] [Mul α] [Add α] [Sub α]
+  [NatToα : Coe Nat α] [Mul α] [Add α] [Sub α]
   (camera : Camera α) (viewport : Viewport α) (index : Nat × Nat)
   : Ray α :=
   let pixelCenter := viewport.pixelCenter index
+  let pixelToCamera := pixelCenter - camera.center
   {
     origin := pixelCenter
-    direction := camera.center - pixelCenter
+    direction := pixelToCamera
   }
 
 namespace Ray
