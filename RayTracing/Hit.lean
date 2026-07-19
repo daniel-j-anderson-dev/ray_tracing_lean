@@ -60,7 +60,7 @@ end hit_record
 namespace hittable
 
 open hit_record in
-public class Hittable (Self Scalar : Type u) where
+public class Hittable Self Scalar where
   hit (self : Self) (ray : Ray Scalar) (rayTMin rayTMax : Scalar) : Option (HitRecord Scalar)
 
 end hittable
