@@ -156,10 +156,12 @@ def raySphereIntersection
 def pixelColor
   (sphere : Sphere) (pixelIndex : Nat × Nat)
   : Rgb Byte :=
-  let ray := rayCast camera viewport pixelIndex
-  match raySphereIntersection ray sphere with
-  | none => blue_white_gradient.pixelColor pixelIndex
-  | some _ => ⟨255, 0, 0⟩
+  (do
+    let ray := rayCast camera viewport pixelIndex
+    _ ← raySphereIntersection ray sphere
+    some (rgb 255 0 0)
+  ).getD
+  (blue_white_gradient.pixelColor pixelIndex)
 
 def sphere : Sphere := {
   center := ⟨0, 0, -1⟩,
