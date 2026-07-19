@@ -8,13 +8,11 @@ import RayTracing.Sphere
 
 open rgb
 open resolution
-open uint8_max
 open sqrt
 
 abbrev Scalar := Float
 local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩
 abbrev Byte := UInt8
-abbrev Byte.max : Byte := 255
 abbrev Vector3 := vector3.Vector3 Scalar
 abbrev Sphere := sphere.Sphere Scalar
 abbrev Ray := ray.Ray Scalar
