@@ -21,11 +21,20 @@ public def zipWith
   : Vector3 γ :=
   ⟨f self.x other.x, f self.y other.y, f self.z other.z⟩
 
+public def foldl
+  (f : α → α → α) (init : α) (self : Vector3 α)
+  : α :=
+  let output := init
+  let output := f output self.x
+  let output := f output self.y
+  let output := f output self.z
+  output
+
 public def sumComponents
-  [Add α]
+  [Add α] [Zero α]
   (self : Vector3 α)
   : α :=
-  self.x + self.y + self.z
+  self.foldl (· + ·) 0
 
 public def scalarMultiply
   [HMul α β γ]

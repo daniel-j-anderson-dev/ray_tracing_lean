@@ -1,4 +1,4 @@
-import RayTracing.Basic
+  import RayTracing.Basic
 import RayTracing.Vector3
 
 namespace quaternion
@@ -24,11 +24,21 @@ public def zipWith
   : Quaternion γ :=
   ⟨f self.x other.x, f self.y other.y, f self.z other.z, f self.w other.w⟩
 
+public def foldl
+  (f : α → α → α) (init : α) (self : Quaternion α)
+  : α :=
+  let output := init
+  let output := f output self.x
+  let output := f output self.y
+  let output := f output self.z
+  let output := f output self.w
+  output
+
 public def sumComponents
-  [Add α]
+  [Add α] [Zero α]
   (self : Quaternion α)
   : α :=
-  self.x + self.y + self.z + self.w
+  self.foldl (· + ·) 0
 
 public def scalarMultiply
   [HMul α β γ]
