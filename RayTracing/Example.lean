@@ -206,16 +206,15 @@ def raySphereIntersection
 def rayColor
   (ray : Ray) (sphere : Sphere)
   : Rgb Scalar :=
-  Option.getD (
-    do
+  (do
     let t ← raySphereIntersection ray sphere
-    let _ ← if t == 0 then none else some ()
+    _ ← if t == 0 then none else some ()
     let hitPoint := ray.pointAt t
     let normal := (hitPoint - sphere.center).normalize.getD 0
     let normalColor := (normal.toRgb + 1) / 2.0
     some normalColor
-  )
- (blue_white_gradient.rayColor ray)
+  ).getD
+  (blue_white_gradient.rayColor ray)
 
 def pixelColor
   (sphere : Sphere) (pixelIndex : Nat × Nat)
