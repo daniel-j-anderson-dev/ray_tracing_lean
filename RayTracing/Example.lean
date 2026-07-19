@@ -14,14 +14,13 @@ open sqrt
 abbrev Scalar := Float
 abbrev Byte := UInt8
 abbrev Byte.max : Byte := 255
-local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩
 abbrev Vector3 := vector3.Vector3 Scalar
+abbrev Sphere := sphere.Sphere Scalar
 abbrev Ray := ray.Ray Scalar
 abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
-abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
-abbrev rayCast := @ray.rayCast
-abbrev Sphere := sphere.Sphere Scalar
+abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
+abbrev rayCast := ray.rayCast (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
@@ -89,7 +88,7 @@ def viewport := Viewport.mk' focalLength viewportHeight camera resolution
 #eval idealAspectRatio
 #eval imageWidth
 #eval resolution
-#eval resolution.aspectRatio (α := Scalar)
+#eval resolution.aspectRatio (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
 #eval camera.center
 #eval camera.right
 #eval camera.up
@@ -106,7 +105,7 @@ def rayCastCsv :=
   let csvData := csvRows.foldl (· ++ ·) ""
   csvColumnNames ++ csvData
 
--- #eval IO.FS.writeFile outputPath rayCastCsv
+#eval IO.FS.writeFile outputPath rayCastCsv
 
 end ray_cast
 
@@ -186,10 +185,10 @@ end sphere_no_shading
 
 namespace sphere_surface_normals
 
-def resolution := ray_cast.resolution
 def viewport := ray_cast.viewport
 def camera := ray_cast.camera
 def header := ray_cast.header
+def sphere := sphere_no_shading.sphere
 
 def raySphereIntersection
   (ray : Ray) (sphere : Sphere)
@@ -218,7 +217,6 @@ def rayColor
   )
  (blue_white_gradient.rayColor ray)
 
-
 def pixelColor
   (sphere : Sphere) (pixelIndex : Nat × Nat)
   : Rgb Byte :=
@@ -226,11 +224,6 @@ def pixelColor
   let color := rayColor ray sphere
   let color := color.map (Float.toUInt8 ∘ (· * 255))
   color
-
-def sphere : Sphere := {
-  center := ⟨0, 0, -1⟩,
-  radius := 0.5
-}
 
 def image := netpbm.generateImage header (pixelColor sphere)
 
