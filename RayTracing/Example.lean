@@ -201,7 +201,7 @@ def rayColor
     _ ← if t == 0 then none else some ()
     let hitPoint := ray.pointAt t
     let normal := (hitPoint - sphere.center).normalize.getD 0
-    let normalColor := (normal.toRgb + 1) / 2.0
+    let normalColor := (normal + 1) / 2.0
     some normalColor
   ).getD
   (blue_white_gradient.rayColor ray)
