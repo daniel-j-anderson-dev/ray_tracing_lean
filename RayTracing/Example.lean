@@ -104,7 +104,7 @@ def rayCastCsv :=
   let csvColumnNames := "pixelIndex, ray.origin.x, ray.origin.y, ray.origin.z, ray.direction.x, ray.direction.y, ray.direction.z\n"
   let csvRows := rays.toList.zipIdx.map
     λ (ray, i) =>
-      s!"{i}, {ray.origin.x}, {ray.origin.y}, {ray.origin.z}, {ray.direction.x}, {ray.direction.y}, {ray.direction.z}\n"
+      s!"{i}, {ray.origin}, {ray.direction}\n"
   let csvData := csvRows.foldl (· ++ ·) ""
   csvColumnNames ++ csvData
 
