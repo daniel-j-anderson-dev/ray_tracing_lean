@@ -12,6 +12,7 @@ open uint8_max
 open sqrt
 
 abbrev Scalar := Float
+local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩
 abbrev Byte := UInt8
 abbrev Byte.max : Byte := 255
 abbrev Vector3 := vector3.Vector3 Scalar
@@ -19,8 +20,8 @@ abbrev Sphere := sphere.Sphere Scalar
 abbrev Ray := ray.Ray Scalar
 abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
-abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
-abbrev rayCast := ray.rayCast (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
+abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
+abbrev rayCast := ray.rayCast (α := Scalar)
 
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
@@ -78,7 +79,7 @@ def viewport := Viewport.mk' focalLength viewportHeight camera resolution
 #eval idealAspectRatio
 #eval imageWidth
 #eval resolution
-#eval resolution.aspectRatio (α := Scalar) (NatToα := ⟨Nat.toFloat⟩)
+#eval resolution.aspectRatio (α := Scalar)
 #eval camera.center
 #eval camera.right
 #eval camera.up
