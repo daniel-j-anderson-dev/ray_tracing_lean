@@ -59,9 +59,17 @@ end hit_record
 
 namespace hittable
 
-open hit_record in
-public class Hittable Self Scalar where
-  hit (self : Self) (ray : Ray Scalar) (rayTMin rayTMax : Scalar) : Option (HitRecord Scalar)
+open hit_record
+
+/--
+# Params
+- `α`
+  - The type that is "Hittable"
+- `β`
+  - the scalar type used in computation
+-/
+public class Hittable (α : Type u) (β : outParam (Type v)) where
+  hit (self : α) (ray : Ray β) (rayTMin rayTMax : β) : Option (HitRecord β)
 
 end hittable
 
