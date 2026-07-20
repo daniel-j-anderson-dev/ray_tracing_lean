@@ -20,7 +20,7 @@ public structure Sphere α where
 namespace Sphere
 
 public instance
-  [One α] [Zero α] [LT α] [LE α] [Add α] [Sub α] [Mul α] [Div α] [Sqrt α]
+  [One α] [Zero α] [LT α] [LE α] [Add α] [Sub α] [Neg α] [Mul α] [Div α] [Sqrt α]
   [DecidableRel (LT.lt (α := α))]
   [DecidableRel (LE.le (α := α))]
   : Hittable (Sphere α) α where
@@ -64,11 +64,11 @@ public instance
     -- return true;
     let hitPosition := ray.pointAt root
     let hitNormal := (hitPosition - sphere.center) / sphere.radius
-    pure {
-      t := root
-      position := hitPosition
-      normal := hitNormal
-    }
+
+    -- vec3 outward_normal = (rec.p - center) / radius;
+    -- rec.set_face_normal(r, outward_normal);
+    let hitRecord := HitRecord.mk' hitPosition ray (t := root) (outwardNormal := hitNormal)
+    pure hitRecord
 
 end Sphere
 
