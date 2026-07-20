@@ -5,7 +5,7 @@ namespace rgb
 
 open vector3
 
-public abbrev Rgb := Vector3
+public abbrev Rgb := @Vector3
 public abbrev rgb (red green blue : α) : Rgb α := ⟨red, green, blue⟩
 public abbrev vector3.Vector3.red := @Vector3.x
 public abbrev vector3.Vector3.green := @Vector3.y
