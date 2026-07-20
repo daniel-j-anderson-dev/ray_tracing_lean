@@ -96,6 +96,19 @@ public def hit
 public instance [Hittable α β] : CoeHead α (AnyHittable β) where
   coe := (⟨·⟩)
 
+public instance : Hittable (List (AnyHittable β)) β where
+  hit items ray tMin tMax := do
+    let mut output := none
+    let mut closestSoFar := tMax
+    for item in items do
+      let hit := item.hit ray tMin closestSoFar
+      match hit with
+      | none => continue
+      | some hitRecord =>
+        closestSoFar := hitRecord.t
+        output := some hitRecord
+    output
+
 end AnyHittable
 
 end any_hittable
