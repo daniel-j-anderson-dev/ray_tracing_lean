@@ -73,4 +73,31 @@ public class Hittable (α : Type u) (β : outParam (Type v)) where
 
 end hittable
 
+namespace any_hittable
+
+open hittable
+
+public structure AnyHittable (β : Type v) where
+  {Data : Type u}
+  data : Data
+  [vtable : Hittable Data β]
+
+namespace AnyHittable
+
+open hit_record
+
+public def hit
+  (self : AnyHittable β)
+  (ray : Ray β)
+  (tMin tMax : β)
+  : Option (HitRecord β) :=
+  self.vtable.hit self.data ray tMin tMax
+
+public instance [Hittable α β] : CoeHead α (AnyHittable β) where
+  coe := (⟨·⟩)
+
+end AnyHittable
+
+end any_hittable
+
 end hit
