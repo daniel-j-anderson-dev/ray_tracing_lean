@@ -230,3 +230,38 @@ def outputPath := s!"{outputPathRoot}sphere_surface_normals{outputPathExtension}
 #eval IO.FS.writeBinFile outputPath image
 
 end sphere_surface_normals
+
+namespace hittable_list
+
+def viewport := ray_cast.viewport
+def camera := ray_cast.camera
+def header := ray_cast.header
+def world : AnyHittable := ↑[
+  (↑sphere_no_shading.sphere : AnyHittable),
+  ↑{ center := ⟨0, -100.5, -1⟩, radius:= 100 : Sphere },
+]
+
+def rayColor
+  (ray : Ray) (world : AnyHittable)
+  : Rgb Scalar :=
+  let hit := world.hit ray (-1) 0
+  let color := match hit with
+  | none => blue_white_gradient.rayColor ray
+  | some hitRecord => (hitRecord.normal + 1) / 2.0
+  color
+
+def pixelColor
+  (world : AnyHittable) (pixelIndex : Nat × Nat)
+  : Rgb Byte :=
+  let ray := rayCast camera viewport pixelIndex
+  let color := rayColor ray world
+  let color := color.map (Float.toUInt8 ∘ (· * 255))
+  color
+
+def image := netpbm.generateImage header (pixelColor world)
+
+def outputPath := s!"{outputPathRoot}hittable_list{outputPathExtension}"
+
+#eval IO.FS.writeBinFile outputPath image
+
+end hittable_list
