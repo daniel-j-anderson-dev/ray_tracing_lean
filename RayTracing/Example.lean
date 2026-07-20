@@ -262,6 +262,7 @@ def image := netpbm.generateImage header (pixelColor world)
 
 def outputPath := s!"{outputPathRoot}hittable_list{outputPathExtension}"
 
+-- https://www.desmos.com/3d/say2dclidk
 #eval IO.FS.writeBinFile outputPath image
 
 end hittable_list
