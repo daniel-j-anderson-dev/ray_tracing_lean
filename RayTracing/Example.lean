@@ -50,7 +50,8 @@ def pixelColor
   let verticalRatio := columnIndex.toFloat / resolution.columnCount.toFloat
 
   let color : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
-  color.percentToByte
+  let color := color.percentToByte
+  color
 
 def imageData := netpbm.generateImage header (pixelColor header.resolution)
 
@@ -125,7 +126,8 @@ def pixelColor
   : Rgb Byte :=
   let ray := rayCast camera viewport index
   let color := rayColor ray
-  color.percentToByte
+  let color := color.percentToByte
+  color
 
 def image := netpbm.generateImage header pixelColor
 
@@ -167,7 +169,8 @@ def pixelColor
   : Rgb Byte :=
   let ray := rayCast camera viewport pixelIndex
   let color := rayColor ray sphere
-  color.percentToByte
+  let color := color.percentToByte
+  color
 
 def sphere : Sphere := {
   center := ⟨0, 0, -1⟩,
@@ -220,7 +223,7 @@ def pixelColor
   : Rgb Byte :=
   let ray := rayCast camera viewport pixelIndex
   let color := rayColor ray sphere
-  let color := color.map (Float.toUInt8 ∘ (· * 255))
+  let color := color.percentToByte
   color
 
 def image := netpbm.generateImage header (pixelColor sphere)
@@ -255,7 +258,7 @@ def pixelColor
   : Rgb Byte :=
   let ray := rayCast camera viewport pixelIndex
   let color := rayColor ray world
-  let color := color.map (Float.toUInt8 ∘ (· * 255))
+  let color := color.percentToByte
   color
 
 def image := netpbm.generateImage header (pixelColor world)
