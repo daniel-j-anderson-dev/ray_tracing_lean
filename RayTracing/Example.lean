@@ -5,14 +5,16 @@ import RayTracing.Ray
 import RayTracing.Camera
 import RayTracing.Viewport
 import RayTracing.Sphere
+import RayTracing.Hit
 
 open rgb
 open resolution
 open sqrt
+open hit
 
-abbrev Scalar := Float
-local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩
 abbrev Byte := UInt8
+abbrev Scalar := Float
+local instance : Coe Nat Scalar := ⟨Nat.toFloat⟩ -- used for index math
 abbrev Vector3 := vector3.Vector3 Scalar
 abbrev Sphere := sphere.Sphere Scalar
 abbrev Ray := ray.Ray Scalar
@@ -20,7 +22,11 @@ abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
 abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
 abbrev rayCast := ray.rayCast (α := Scalar)
+abbrev HitRecord := hit_record.HitRecord (α := Scalar)
+abbrev Hittable := hittable.Hittable (β := Scalar)
+abbrev AnyHittable := any_hittable.AnyHittable (β := Scalar)
 
+def rgb.Rgb.percentToByte : Rgb Scalar → Rgb Byte := .map ((·.toUInt8) ∘ (· * 255))
 def outputPathRoot := "./output/"
 def outputPathExtension := ".ppm"
 
@@ -43,9 +49,8 @@ def pixelColor
   let horizontalRatio := rowIndex.toFloat / resolution.rowCount.toFloat
   let verticalRatio := columnIndex.toFloat / resolution.columnCount.toFloat
 
-  let percentColor : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
-  let color := percentColor.map ((·.toUInt8) ∘ (· * 255.0))
-  color
+  let color : Rgb _ := ⟨horizontalRatio, verticalRatio, 0.0⟩
+  color.percentToByte
 
 def imageData := netpbm.generateImage header (pixelColor header.resolution)
 
@@ -112,16 +117,15 @@ def rayColor
   let a := (unitDirection.y + 1) / 2
   let startColor : Rgb _ := ⟨1.0, 1.0, 1.0⟩
   let endColor : Rgb _ := ⟨0.5, 0.7, 1.0⟩
-  let percentColor := (1 - a) * startColor + a * endColor
-  percentColor
+  let color := (1 - a) * startColor + a * endColor
+  color
 
 def pixelColor
   (index : Nat × Nat)
   : Rgb Byte :=
   let ray := rayCast camera viewport index
-  let percentColor := rayColor ray
-  let color := percentColor.map (Float.toUInt8 ∘ (· * 255))
-  color
+  let color := rayColor ray
+  color.percentToByte
 
 def image := netpbm.generateImage header pixelColor
 
@@ -151,15 +155,19 @@ def raySphereIntersection
   else
     some ((-b - (sqrt discriminant)) / (2 * a))
 
+def rayColor
+  (ray : Ray) (sphere : Sphere)
+  : Rgb Scalar :=
+  match raySphereIntersection ray sphere with
+  | none => blue_white_gradient.rayColor ray
+  | some _ => ⟨1, 0, 0⟩
+
 def pixelColor
   (sphere : Sphere) (pixelIndex : Nat × Nat)
   : Rgb Byte :=
-  (do
-    let ray := rayCast camera viewport pixelIndex
-    _ ← raySphereIntersection ray sphere
-    some (rgb 255 0 0)
-  ).getD
-  (blue_white_gradient.pixelColor pixelIndex)
+  let ray := rayCast camera viewport pixelIndex
+  let color := rayColor ray sphere
+  color.percentToByte
 
 def sphere : Sphere := {
   center := ⟨0, 0, -1⟩,
@@ -199,7 +207,7 @@ def rayColor
   : Rgb Scalar :=
   (do
     let t ← raySphereIntersection ray sphere
-    _ ← if t == 0 then none else some ()
+    if t == 0 then none else some ()
     let hitPoint := ray.pointAt t
     let normal := (hitPoint - sphere.center).normalize.getD 0
     let normalColor := (normal + 1) / 2.0
