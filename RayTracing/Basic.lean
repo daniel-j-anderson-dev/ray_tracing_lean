@@ -28,3 +28,18 @@ public def clamp
   max lower (min value upper)
 
 end clamp
+
+namespace infinity
+
+public class Infinity α where
+  infinity : α
+
+public def infinity [Infinity α] : α := Infinity.infinity
+
+public instance Float.Infinity : Infinity Float where
+  infinity := 1 / 0
+
+public instance Float32.Infinity : Infinity Float32 where
+  infinity := 1 / 0
+
+end infinity
