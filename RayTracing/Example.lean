@@ -5,12 +5,13 @@ import RayTracing.Ray
 import RayTracing.Camera
 import RayTracing.Viewport
 import RayTracing.Sphere
-import RayTracing.Hit
+-- import RayTracing.Hit
 
 open rgb
 open resolution
 open sqrt
-open hit
+-- open hit
+open ray.Ray
 
 abbrev Byte := UInt8
 abbrev Scalar := Float
@@ -22,9 +23,9 @@ abbrev Camera := camera.Camera Scalar
 abbrev Viewport := viewport.Viewport Scalar
 abbrev Viewport.mk' := viewport.Viewport.mk' (α := Scalar)
 abbrev rayCast := ray.rayCast (α := Scalar)
-abbrev HitRecord := hit_record.HitRecord (α := Scalar)
-abbrev Hittable := hittable.Hittable (β := Scalar)
-abbrev AnyHittable := any_hittable.AnyHittable (β := Scalar)
+abbrev Ray.Intersection := @(ray.Ray.Intersection (α := Scalar))
+abbrev Ray.Intersect := @(ray.Ray.Intersect (β := Scalar))
+abbrev Ray.AnyIntersect := @(ray.Ray.AnyIntersect (β := Scalar))
 
 def rgb.Rgb.percentToByte : Rgb Scalar → Rgb Byte := .map ((·.toUInt8) ∘ (· * 255))
 def outputPathRoot := "./output/"
@@ -32,14 +33,10 @@ def outputPathExtension := ".ppm"
 
 namespace red_green_gradient
 
-def header : netpbm.Header := {
+def header : netpbm.Header where
   format := .P6
-  resolution := {
-    rowCount := 400
-    columnCount := 400
-  }
+  resolution := ⟨400, 400⟩
   maxValue := 255
-}
 
 def pixelColor
   (resolution : Resolution) (index : Nat × Nat)
@@ -70,10 +67,9 @@ def resolution := Resolution.fromColumnCountIdealAspectRatio imageWidth idealAsp
 def header := { red_green_gradient.header with resolution := resolution }
 def outputPath := s!"{outputPathRoot}ray_cast.csv"
 
-def camera : Camera := {
+def camera : Camera where
   center := ⟨0,0,0⟩
   orientation := ⟨0, 0, 0, 1⟩
-}
 
 def focalLength := 1.0
 def viewportHeight := 2.0
@@ -239,22 +235,21 @@ namespace hittable_list
 def viewport := ray_cast.viewport
 def camera := ray_cast.camera
 def header := ray_cast.header
-def world : AnyHittable := ↑[
-  (↑sphere_no_shading.sphere : AnyHittable),
+def world : Ray.AnyIntersect := ↑[
+  (↑sphere_no_shading.sphere : Ray.AnyIntersect),
   ↑{ center := ⟨0, -100.5, -1⟩, radius:= 100 : Sphere },
 ]
 
 def rayColor
-  (ray : Ray) (world : AnyHittable)
+  (ray : Ray) (world : Ray.AnyIntersect)
   : Rgb Scalar :=
-  let hit := world.hit ray (-1) 0
-  let color := match hit with
+  let color := match world.intersect ray ⟨-1, 0⟩ with
   | none => blue_white_gradient.rayColor ray
-  | some hitRecord => (hitRecord.normal + 1) / 2.0
+  | some intersection => (intersection.normal + 1) / 2.0
   color
 
 def pixelColor
-  (world : AnyHittable) (pixelIndex : Nat × Nat)
+  (world : Ray.AnyIntersect) (pixelIndex : Nat × Nat)
   : Rgb Byte :=
   let ray := rayCast camera viewport pixelIndex
   let color := rayColor ray world
