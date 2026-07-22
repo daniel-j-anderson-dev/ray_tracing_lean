@@ -1,10 +1,12 @@
 import RayTracing.Vector3
 import RayTracing.Ray
+import RayTracing.Interval
 
 namespace hit
 
 open vector3
 open ray
+open interval
 
 namespace hit_record
 
@@ -44,7 +46,7 @@ open hit_record
   - the scalar type used in computation
 -/
 public class Hittable (α : Type u) (β : outParam (Type v)) where
-  hit (self : α) (ray : Ray β) (rayTMin rayTMax : β) : Option (HitRecord β)
+  hit (self : α) (ray : Ray β) (rayT : Interval β) : Option (HitRecord β)
 
 end hittable
 
@@ -52,6 +54,9 @@ namespace any_hittable
 
 open hittable
 
+/--
+An opaque wrapper around a type `Data` and a specific instance of `Hittable`. Used for runtime polymorphism
+-/
 public structure AnyHittable (β : Type v) where
   {Data : Type u}
   data : Data
@@ -64,19 +69,19 @@ open hit_record
 public def hit
   (self : AnyHittable β)
   (ray : Ray β)
-  (tMin tMax : β)
+  (rayT : Interval β)
   : Option (HitRecord β) :=
-  self.vtable.hit self.data ray tMin tMax
+  self.vtable.hit self.data ray rayT
 
 public instance [Hittable α β] : CoeHead α (AnyHittable β) where
   coe := (⟨·⟩)
 
 public instance : Hittable (List (AnyHittable β)) β where
-  hit items ray tMin tMax := do
+  hit items ray rayT := do
     let mut output := none
-    let mut closestSoFar := tMax
+    let mut closestSoFar := rayT.max
     for item in items do
-      let hit := item.hit ray tMin closestSoFar
+      let hit := item.hit ray ⟨rayT.min, closestSoFar⟩
       match hit with
       | none => continue
       | some hitRecord =>
